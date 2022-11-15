@@ -1,0 +1,26 @@
+server:
+  port: 8001
+spring:
+  application:
+    name: yixue-admin
+  cloud:
+    nacos:
+      username: nacos
+      password: nacos
+      #注册中心
+      discovery:
+        server-addr: 1.12.236.238:8848
+        #指定命名空间
+        namespace: dev
+      #配置中心
+      config:
+        server-addr: 1.12.236.238:8848
+        #文件类型
+        file-extension: yaml
+        #指定分组
+        group: dev
+        #指定命名空间
+        namespace: dev
+#  main:
+#    # 允许相同名称的bean覆盖
+#    allow-bean-definition-overriding: true

@@ -1,0 +1,16 @@
+spring:
+  # mysql数据库连接
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/yixue_blog_db?characterEncoding=utf-8&useSSL=false
+    username: root
+    password: 123456
+  #返回json的全局时间格式
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+  redis:
+    host: 1.12.236.238
+    port: 6379
+    password: 123456
