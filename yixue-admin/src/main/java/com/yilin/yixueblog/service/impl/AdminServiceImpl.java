@@ -2,15 +2,11 @@ package com.yilin.yixueblog.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yilin.yixueblog.RedisUtil;
-import com.yilin.yixueblog.Result;
 import com.yilin.yixueblog.mapper.AdminMapper;
 import com.yilin.yixueblog.model.Admin;
 import com.yilin.yixueblog.service.AdminService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements AdminService {
