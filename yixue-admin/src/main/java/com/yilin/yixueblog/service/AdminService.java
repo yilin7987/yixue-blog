@@ -1,9 +1,7 @@
 package com.yilin.yixueblog.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.yilin.yixueblog.model.Admin;
-
-import javax.servlet.http.HttpServletRequest;
+import com.yilin.yixueblog.entity.Admin;
 
 public interface AdminService extends IService<Admin> {
     /**

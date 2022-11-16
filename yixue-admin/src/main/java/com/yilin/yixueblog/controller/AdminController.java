@@ -1,17 +1,13 @@
 package com.yilin.yixueblog.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yilin.yixueblog.IpUtils;
 import com.yilin.yixueblog.RedisUtil;
 import com.yilin.yixueblog.Result;
 import com.yilin.yixueblog.StringUtils;
-import com.yilin.yixueblog.model.Admin;
 import com.yilin.yixueblog.service.AdminService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
