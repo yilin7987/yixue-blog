@@ -23,7 +23,7 @@ public class SuperEntity<T extends Model> extends Model {
     /**
      * 唯一UID
      */
-    @TableId(value = "uid", type = IdType.ASSIGN_UUID)
+    @TableId(value = "uid", type = IdType.ASSIGN_ID)
     private String uid;
     /**
      * 状态 0：失效  1：生效
