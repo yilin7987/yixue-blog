@@ -1,4 +1,4 @@
-package com.yilin.yixueblog.model;
+package com.yilin.yixueblog.entity;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;

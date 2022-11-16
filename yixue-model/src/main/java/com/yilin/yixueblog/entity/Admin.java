@@ -1,4 +1,4 @@
-package com.yilin.yixueblog.model;
+package com.yilin.yixueblog.entity;
 
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.management.relation.Role;
 import java.util.Date;
 import java.util.List;
 

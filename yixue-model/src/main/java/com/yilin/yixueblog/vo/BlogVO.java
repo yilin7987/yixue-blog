@@ -1,8 +1,8 @@
 package com.yilin.yixueblog.vo;
 
 
-import com.yilin.yixueblog.model.BlogSort;
-import com.yilin.yixueblog.model.Tag;
+import com.yilin.yixueblog.entity.BlogSort;
+import com.yilin.yixueblog.entity.Tag;
 import lombok.Data;
 
 import java.util.List;
