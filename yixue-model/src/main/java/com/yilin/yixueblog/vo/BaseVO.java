@@ -12,6 +12,8 @@ public class BaseVO<T> extends PageInfo<T> {
      * 唯一UID
      */
     private String uid;
-
+    /**
+     * 状态
+     */
     private Integer status;
 }

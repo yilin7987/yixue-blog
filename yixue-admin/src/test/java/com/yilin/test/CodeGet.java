@@ -51,7 +51,7 @@ public class CodeGet {
         // 5、策略配置
         StrategyConfig strategy = new StrategyConfig();
 
-        strategy.setInclude("tb_blog");   //那个表
+        strategy.setInclude("tb_picture");   //那个表
 
         strategy.setNaming(NamingStrategy.underline_to_camel);//数据库表映射到实体的命名策略
 
@@ -60,6 +60,7 @@ public class CodeGet {
 
         strategy.setRestControllerStyle(true); //restful api风格控制器
         strategy.setControllerMappingHyphenStyle(true); //url中驼峰转连字符
+        strategy.setTablePrefix("tb_"); //Table省略前缀
 
         mpg.setStrategy(strategy);
 

@@ -223,7 +223,6 @@ public class StringUtils {
 
     /**
      * 把字符串按code 转换为List<String>
-     *
      * @param str
      * @return
      */
