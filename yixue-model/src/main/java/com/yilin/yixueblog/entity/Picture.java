@@ -10,7 +10,9 @@ import lombok.Data;
 @Data
 public class Picture extends SuperEntity<Picture>{
     private static final long serialVersionUID = 1L;
-
+    /**
+     * 原始名称
+     */
     private String picOldName;
     /**
      * 图片大小
@@ -37,7 +39,7 @@ public class Picture extends SuperEntity<Picture>{
     private String picUrl;
 
     /**
-     * 七牛云Url
+     * 腾讯云对象存储Url
      */
     private String txUrl;
 

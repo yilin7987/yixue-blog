@@ -8,9 +8,7 @@ import com.baomidou.mybatisplus.generator.config.GlobalConfig;
 import com.baomidou.mybatisplus.generator.config.PackageConfig;
 import com.baomidou.mybatisplus.generator.config.StrategyConfig;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.sql.DataSource;
 
 public class CodeGet {
     public static void main(String[] args) {
@@ -51,7 +49,7 @@ public class CodeGet {
         // 5、策略配置
         StrategyConfig strategy = new StrategyConfig();
 
-        strategy.setInclude("tb_picture");   //那个表
+        strategy.setInclude("tb_picture_sort");   //那个表
 
         strategy.setNaming(NamingStrategy.underline_to_camel);//数据库表映射到实体的命名策略
 

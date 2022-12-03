@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -37,6 +38,11 @@ public class Blog extends SuperEntity<Blog> {
      * 博客内容
      */
     private String content;
+
+    /**
+     * markdown语法
+     */
+//    private String markdown;
 
     /**
      * 标签uid
@@ -132,7 +138,7 @@ public class Blog extends SuperEntity<Blog> {
      * 标题图
      */
     @TableField(exist = false)
-    private List<String> photoList;
+    private Picture picture;
 
     /**
      * 博客分类
@@ -145,12 +151,6 @@ public class Blog extends SuperEntity<Blog> {
      */
     @TableField(exist = false)
     private String blogSortName;
-
-    /**
-     * 博客标题图
-     */
-    @TableField(exist = false)
-    private String photoUrl;
 
     /**
      * 点赞数

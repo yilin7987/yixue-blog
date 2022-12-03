@@ -14,3 +14,16 @@ spring:
     host: 1.12.236.238
     port: 6379
     password: 123456
+
+#腾讯云对象存储
+COS:
+  secretId: AKIDMYSCj3A6oIYrxqtgGdleNs9C1c0ThiV4
+  secretKey: NXUDhxznbAUbVEm9LMCqJajhU6VjlcIn
+  region: ap-guangzhou
+  bucketName: yixueblog-1313883062
+  url: https://yixueblog-1313883062.cos.ap-guangzhou.myqcloud.com
+
+  #mybatis-plus配置控制台打印完整带参数SQL语句
+#mybatis-plus:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

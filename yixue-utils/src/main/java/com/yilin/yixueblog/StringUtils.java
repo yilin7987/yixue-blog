@@ -62,7 +62,6 @@ public class StringUtils {
 
     /**
      * 把String 转换为 long
-     *
      * @param str
      * @param defaultData
      * @return
@@ -106,7 +105,6 @@ public class StringUtils {
 
     /**
      * 把String转换成int数据
-     *
      * @param str
      * @param defaultData
      * @return
@@ -126,7 +124,6 @@ public class StringUtils {
 
     /**
      * 把String转换成double数据
-     *
      * @param str
      * @param defaultData
      * @return
@@ -146,7 +143,6 @@ public class StringUtils {
 
     /**
      * 把String转换成float数据
-     *
      * @param str
      * @param defaultData
      * @return
@@ -166,9 +162,8 @@ public class StringUtils {
 
     /**
      * 判断字符串是否为空
-     *
      * @param s
-     * @return
+     * @return Boolean
      */
     public static Boolean isEmpty(String s) {
         if (s == null || s.length() <= 0) {
@@ -179,7 +174,6 @@ public class StringUtils {
 
     /**
      * 判断字符串是否为空
-     *
      * @param str
      * @return
      */
@@ -189,7 +183,6 @@ public class StringUtils {
 
     /**
      * 按code截取字符串
-     *
      * @return
      */
     public static String[] split(String str, String code) {
@@ -204,7 +197,6 @@ public class StringUtils {
 
     /**
      * 把字符串按code 转换为List<Long>
-     *
      * @param str
      * @return
      */
@@ -238,7 +230,6 @@ public class StringUtils {
 
     /**
      * 把字符串按code 转换为List<Long>
-     *
      * @param str
      * @return
      */
@@ -255,7 +246,6 @@ public class StringUtils {
 
     /**
      * 生成唯一订单号
-     *
      * @return
      */
     public static String getOrderNumberByUUID() {
@@ -271,7 +261,6 @@ public class StringUtils {
 
     /**
      * 生成唯一商户退款单号
-     *
      * @return
      */
     public static String getOutRefundNoByUUID() {
@@ -284,5 +273,30 @@ public class StringUtils {
         String out_refund_no = "BACK" + machineId + String.format("%015d", hashCodeV);
         return out_refund_no;
 
+    }
+    /**
+     * 判断是否为非空字符串
+     * @param str
+     * @return
+     */
+    public static boolean isNotBlank(String str) {
+        return !StringUtils.isBlank(str);
+    }
+    /**
+     * 判断是否为空字符串
+     * @param str
+     * @return
+     */
+    public static boolean isBlank(String str) {
+        int strLen;
+        if (str == null || (strLen = str.length()) == 0) {
+            return true;
+        }
+        for (int i = 0; i < strLen; i++) {
+            if ((Character.isWhitespace(str.charAt(i)) == false)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

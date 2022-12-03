@@ -2,6 +2,7 @@ package com.yilin.yixueblog.vo;
 
 
 import com.yilin.yixueblog.entity.BlogSort;
+import com.yilin.yixueblog.entity.Picture;
 import com.yilin.yixueblog.entity.Tag;
 import lombok.Data;
 
@@ -31,7 +32,7 @@ public class BlogVO extends BaseVO<BlogVO> {
     /**
      * 标签uid
      */
-    private String tagUid;
+    private List<Tag> tagList;
     /**
      * 博客分类UID
      */
@@ -80,16 +81,11 @@ public class BlogVO extends BaseVO<BlogVO> {
      */
     private String outsideLink;
 
-    /**
-     * 标签,一篇博客对应多个标签
-     */
-    private List<Tag> tagList;
-
     // 以下字段不存入数据库，封装为了方便使用
     /**
      * 标题图
      */
-    private List<String> photoList;
+    private Picture picture;
     /**
      * 博客分类
      */
@@ -98,10 +94,6 @@ public class BlogVO extends BaseVO<BlogVO> {
      * 点赞数
      */
     private Integer praiseCount;
-    /**
-     * 版权申明
-     */
-    private String copyright;
 
     /**
      * 博客等级关键字，仅用于getList

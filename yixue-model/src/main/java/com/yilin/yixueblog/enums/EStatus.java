@@ -3,31 +3,21 @@ package com.yilin.yixueblog.enums;
 /**
  * 状态枚举类
  */
-public enum EStatus {
-
+public class EStatus {
     /**
-     * 逻辑删除
+     * 删除的
      */
-    DISABLED (0),
+    public static final int DISABLED = 0;
     /**
-     * 激活
+     * 激活的
      */
-    ENABLE (1),
+    public static final int ENABLE = 1;
     /**
-     * 冻结
+     * 冻结的
      */
-    FREEZE (2),
+    public static final int FREEZE = 2;
     /**
-     * 置顶
+     * 置顶的
      */
-    STICK(3);
-    private final int key;
-
-    EStatus(int key) {
-        this.key = key;
-    }
-
-    public int getKey() {
-        return key;
-    }
+    public static final int STICK = 3;
 }
