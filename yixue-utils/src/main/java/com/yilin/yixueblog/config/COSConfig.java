@@ -26,13 +26,13 @@ public class COSConfig {
 
     @Bean
     public COSClient cosClient() {
-//        初始化用户信息
-        COSCredentials cosCredentials = new BasicCOSCredentials(this.secretId,this.secretKey);
-//        设置地域
+        //初始化用户信息
+        COSCredentials cosCredentials = new BasicCOSCredentials(this.secretId, this.secretKey);
+        //设置地域
         Region region = new Region(this.region);
         ClientConfig config = new ClientConfig(region);
-//        生成COS客户端
-        COSClient client = new COSClient(cosCredentials,config);
+        //生成COS客户端
+        COSClient client = new COSClient(cosCredentials, config);
         return client;
     }
 }

@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: yixue-gateway
+  profiles:
+    active: dev
   cloud:
     nacos:
       username: nacos
