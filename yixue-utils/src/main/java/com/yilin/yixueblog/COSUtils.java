@@ -28,9 +28,15 @@ public class COSUtils {
     public String upload(InputStream inputStream, String uid ,String picExpandedName) throws IOException {
 
         String dateUrl = new DateTime().toString("yyyy/MM/dd");
+        String path;
         // jpg/2022/11/21/15415151515515.jpg
-        String path = picExpandedName+"/"+dateUrl + "/" + uid+"."+picExpandedName;
-
+        if ("avatar".equals(picExpandedName.split("/")[0])){
+            //如果是头像
+            String[] split = picExpandedName.split("/");
+            path = picExpandedName+"/"+dateUrl + "/" + uid+"."+split[split.length-1];
+        }else {
+            path = picExpandedName+"/"+dateUrl + "/" + uid+"."+picExpandedName;
+        }
         ObjectMetadata objectMetadata = new ObjectMetadata();
         PutObjectRequest putObjectRequest = new PutObjectRequest(cosconfig.getBucketName(), path, inputStream, objectMetadata);
         PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);

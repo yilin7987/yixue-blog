@@ -6,10 +6,6 @@ import com.yilin.yixueblog.mapper.AdminMapper;
 import com.yilin.yixueblog.entity.Admin;
 import com.yilin.yixueblog.service.AdminService;
 import org.springframework.stereotype.Service;
-
-/**
- * TODO 适配器模式
- */
 @Service
 public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements AdminService {
     /**

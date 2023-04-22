@@ -31,6 +31,12 @@ public interface BlogSortService extends IService<BlogSort> {
     IPage<BlogSort> getPageList(BlogSortVO blogSortVO);
 
     /**
+     * 获取全部博客分类列表
+     * @return
+     */
+     List<BlogSort> getAllList();
+
+    /**
      * 编辑博客分类
      * @param blogSortVO
      */

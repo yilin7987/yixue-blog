@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,6 +17,60 @@ public class StringUtils {
     private static int machineId = 1;
     private static final Pattern CAMLE_PATTERN = Pattern.compile("_(\\w)");
     private static final Pattern UNDER_LINE_PATTERN = Pattern.compile("[A-Z]");
+
+
+    /**
+     * 随机生成验证码
+     * @param length 长度为4位或者6位
+     * @return
+     */
+    public static Integer generateValidateCode(int length){
+        Integer code =null;
+        if(length == 4){
+            code = new Random().nextInt(9999);//生成随机数，最大为9999
+        }else if(length == 6){
+            code = new Random().nextInt(999999);//生成随机数，最大为999999
+        }else{
+            throw new RuntimeException("只能生成4位或6位数字验证码");
+        }
+        return code;
+    }
+
+    /**
+     * 切割字符串
+     * @param str
+     * @param start
+     * @return
+     */
+    public static String substring(String str, int start) {
+        if (str == null) {
+            return null;
+        }
+        // handle negatives, which means last n characters
+        if (start < 0) {
+            start = str.length() + start;
+        }
+        if (start < 0) {
+            start = 0;
+        }
+        if (start > str.length()) {
+            return "";
+        }
+        return str.substring(start);
+    }
+
+    /**
+     * 某个子串是否在字符串内
+     * @param str
+     * @param searchChar
+     * @return
+     */
+    public static boolean contains(String str, String searchChar) {
+        if (isEmpty(str)) {
+            return false;
+        }
+        return str.indexOf(searchChar) >= 0;
+    }
 
     /**
      * 下划线转驼峰
@@ -58,6 +113,16 @@ public class StringUtils {
             return sb;
         }
         return underLine(sb);
+    }
+
+    /**
+     * 获取UUID，去掉了-
+     * @return
+     */
+    public static String getUUID() {
+        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        log.debug("获取32位的UUID的调试日志-->>" + uuid);
+        return uuid;
     }
 
     /**

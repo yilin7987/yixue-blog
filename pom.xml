@@ -15,6 +15,7 @@
         <module>yixue-admin</module>
         <module>yixue-utils</module>
         <module>yixue-model</module>
+        <module>yixue-web</module>
     </modules>
 
     <properties>
@@ -45,6 +46,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <!-- spring cloud alibaba-->
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>

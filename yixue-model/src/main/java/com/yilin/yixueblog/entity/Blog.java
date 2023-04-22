@@ -125,6 +125,9 @@ public class Blog extends SuperEntity<Blog> {
      */
     private String outsideLink;
 
+    //markdown格式
+    private String markdown;
+
 
     // 以下字段不存入数据库，封装为了方便使用
 

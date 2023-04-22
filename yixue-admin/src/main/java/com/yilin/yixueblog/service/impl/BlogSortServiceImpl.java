@@ -96,6 +96,19 @@ public class BlogSortServiceImpl extends ServiceImpl<BlogSortMapper, BlogSort> i
     }
 
     /**
+     * 获取全部博客分类列表
+     * @return
+     */
+    @Override
+    public List<BlogSort> getAllList() {
+        QueryWrapper<BlogSort> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("status", EStatus.ENABLE);
+        queryWrapper.orderByDesc("sort");
+        List<BlogSort> blogSortList = blogSortService.list(queryWrapper);
+        return blogSortList;
+    }
+
+    /**
      * 编辑博客分类
      *
      * @param blogSortVO

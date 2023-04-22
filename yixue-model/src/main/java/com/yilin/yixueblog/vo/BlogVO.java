@@ -125,6 +125,8 @@ public class BlogVO extends BaseVO<BlogVO> {
      */
     private String orderByAscColumn;
 
+    private  String markdown;
+
     /**
      * 无参构造方法，初始化默认值
      */
