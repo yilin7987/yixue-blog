@@ -16,6 +16,7 @@
         <module>yixue-utils</module>
         <module>yixue-model</module>
         <module>yixue-web</module>
+        <module>yixue-service</module>
     </modules>
 
     <properties>
