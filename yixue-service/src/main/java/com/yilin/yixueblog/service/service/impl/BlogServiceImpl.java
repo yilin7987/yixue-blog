@@ -216,6 +216,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         blog.setTitle(blogVO.getTitle());
         blog.setSummary(blogVO.getSummary());
         blog.setContent(blogVO.getContent());
+        blog.setMarkdown(blogVO.getMarkdown());
         blog.setTagUid(tagUid);
         blog.setBlogSortUid(blogVO.getBlogSortUid());
         if (blogVO.getPicture() != null) {
