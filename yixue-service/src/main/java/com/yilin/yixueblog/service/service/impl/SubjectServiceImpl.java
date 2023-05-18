@@ -3,6 +3,8 @@ package com.yilin.yixueblog.service.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yilin.yixueblog.model.entity.SubjectItem;
+import com.yilin.yixueblog.service.service.SubjectItemService;
 import com.yilin.yixueblog.utils.StringUtils;
 import com.yilin.yixueblog.model.entity.Picture;
 import com.yilin.yixueblog.model.entity.Subject;
@@ -13,12 +15,10 @@ import com.yilin.yixueblog.service.service.SubjectService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yilin.yixueblog.model.vo.SubjectVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -32,6 +32,13 @@ import java.util.Map;
 public class SubjectServiceImpl extends ServiceImpl<SubjectMapper, Subject> implements SubjectService {
     @Autowired
     private PictureService pictureService;
+
+    @Autowired
+    private SubjectItemService subjectItemService;
+
+    @Autowired
+    @Lazy
+    private SubjectService subjectService;
     /**
      * 获取专题列表
      * @param subjectVO
@@ -50,6 +57,9 @@ public class SubjectServiceImpl extends ServiceImpl<SubjectMapper, Subject> impl
         queryWrapper.orderByDesc("sort");
         IPage<Subject> pageList = baseMapper.selectPage(page, queryWrapper);
         List<Subject> list = pageList.getRecords();
+        if (list.size() == 0){
+            return pageList;
+        }
         //封面uid集合
         List<String> fileList=new ArrayList<>();
         list.forEach(item -> {
@@ -75,4 +85,99 @@ public class SubjectServiceImpl extends ServiceImpl<SubjectMapper, Subject> impl
         return pageList;
     }
 
+    /**
+     * 批量删除
+     * @param subjectVOList
+     * @return
+     */
+    @Override
+    public String deleteBatchSubject(List<SubjectVO> subjectVOList) {
+        if (subjectVOList.size() == 0) {
+            return "传入参数有误！";
+        }
+        List<String> uids = new ArrayList<>();
+        subjectVOList.forEach(item -> {
+            uids.add(item.getUid());
+        });
+        // 判断要删除的分类，是否有资源
+        QueryWrapper<SubjectItem> subjectItemQueryWrapper = new QueryWrapper<>();
+        subjectItemQueryWrapper.eq("status", EStatus.ENABLE);
+        subjectItemQueryWrapper.in("subject_uid", uids);
+        Integer count = Math.toIntExact(subjectItemService.count(subjectItemQueryWrapper));
+        if (count > 0) {
+            return "该专题下还有内容！";
+        }
+        Collection<Subject> subjectList = baseMapper.selectBatchIds(uids);
+        subjectList.forEach(item -> {
+            item.setUpdateTime(new Date());
+            item.setStatus(EStatus.DISABLED);
+        });
+        Boolean save = subjectService.updateBatchById(subjectList);
+        if (save) {
+            return "删除成功";
+        } else {
+            return "删除失败";
+        }
+    }
+
+    /**
+     * 新增专题
+     *
+     * @param subjectVO
+     */
+    @Override
+    public String addSubject(SubjectVO subjectVO) {
+        /**
+         * 判断需要增加的分类是否存在
+         */
+        QueryWrapper<Subject> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("subject_name", subjectVO.getSubjectName());
+        queryWrapper.eq("status", EStatus.ENABLE);
+        queryWrapper.last("LIMIT 1");
+        Subject tempSubject = subjectService.getOne(queryWrapper);
+        if (tempSubject != null) {
+            return "该专题已存在";
+        }
+        Subject subject = new Subject();
+        subject.setSubjectName(subjectVO.getSubjectName());
+        subject.setSummary(subjectVO.getSummary());
+        subject.setFileUid(subjectVO.getFileUid());
+        subject.setClickCount(subjectVO.getClickCount());
+        subject.setCollectCount(subjectVO.getCollectCount());
+        subject.setSort(subjectVO.getSort());
+        subject.setStatus(EStatus.ENABLE);
+        subject.insert();
+        return "添加成功";
+    }
+
+    /**
+     * 编辑专题
+     * @param subjectVO
+     */
+    @Override
+    public String editSubject(SubjectVO subjectVO) {
+        Subject subject = subjectService.getById(subjectVO.getUid());
+        /**
+         * 判断需要编辑的分类是否存在
+         */
+        if (!subject.getSubjectName().equals(subjectVO.getSubjectName())) {
+            QueryWrapper<Subject> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("subject_name", subjectVO.getSubjectName());
+            queryWrapper.eq("status", EStatus.ENABLE);
+            Subject tempSubject = subjectService.getOne(queryWrapper);
+            if (tempSubject != null) {
+                return "该实体已存在";
+            }
+        }
+        subject.setSubjectName(subjectVO.getSubjectName());
+        subject.setSummary(subjectVO.getSummary());
+        subject.setFileUid(subjectVO.getFileUid());
+        subject.setClickCount(subjectVO.getClickCount());
+        subject.setCollectCount(subjectVO.getCollectCount());
+        subject.setSort(subjectVO.getSort());
+        subject.setStatus(EStatus.ENABLE);
+        subject.setUpdateTime(new Date());
+        subject.updateById();
+        return "更新成功";
+    }
 }

@@ -133,19 +133,19 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
 
         // 判断要删除的标签，是否有博客
         int blogCount = 0;
-        for (String s : tagUidList) {
+        for (String tagUid : tagUidList) {
             QueryWrapper<Blog> blogQueryWrapper = new QueryWrapper<>();
             blogQueryWrapper.eq("status", EStatus.ENABLE);
-            blogQueryWrapper.like("tag_uid", s);
+            blogQueryWrapper.like("tag_uid", tagUid);
             blogCount = blogCount + (int) blogService.count(blogQueryWrapper);
         }
         if (blogCount > 0) {
             return "标签下还有博客";
         }
-
+        //获取要删除的标签
         List<Tag> tagList = tagService.listByIds(tagUidList);
-
         tagList.forEach(item -> {
+            //逻辑删除，修改状态字段
             item.setStatus(EStatus.DISABLED);
         });
         Boolean save = tagService.updateBatchById(tagList);

@@ -39,8 +39,6 @@ public class AvatarServiceImpl extends ServiceImpl<AvatarMapper, Avatar> impleme
      */
     @Override
     public Avatar upload(HttpServletRequest request, MultipartFile file) throws IOException {
-        //获取用户id
-        String userUid = request.getAttribute("userUid").toString();
 
         Avatar avatar = new Avatar();
         //文件名字
@@ -56,13 +54,7 @@ public class AvatarServiceImpl extends ServiceImpl<AvatarMapper, Avatar> impleme
         avatar.setAvatarSize(size);
         avatar.setStatus(EStatus.ENABLE);
 
-        avatar.setUserUid(userUid);
-
         avatar.insert();
-
-        //更新用户的头像信息
-        User user = userService.getById(userUid);
-        user.setAvatar(avatar.getUid());
 
         String uploadStr;
         InputStream inputStream = null;

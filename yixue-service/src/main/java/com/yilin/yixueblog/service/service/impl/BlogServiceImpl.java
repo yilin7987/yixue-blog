@@ -135,11 +135,12 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
 
         //分页
         Page<Blog> page = new Page<>();
+        //第几页
         page.setCurrent(blogVO.getCurrentPage());
+        //一页几条
         page.setSize(blogVO.getPageSize());
         //状态 ： 1激活
         queryWrapper.eq("status", EStatus.ENABLE);
-
         if (StringUtils.isNotEmpty(blogVO.getOrderByAscColumn())) {
             // 将驼峰转换成下划线
             String column = StringUtils.underLine(new StringBuffer(blogVO.getOrderByAscColumn())).toString();
@@ -158,13 +159,13 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
                 queryWrapper.orderByDesc("sort");
             }
         }
-
         IPage<Blog> pageList = blogService.page(page, queryWrapper);
+        //获取查询结果
         List<Blog> blogList = pageList.getRecords();
-
         if (blogList.size() == 0) {
             return pageList;
         }
+        //加工，如添加博客封面、标签、分类等
         blogList = setBlog(blogList);
         pageList.setRecords(blogList);
         return pageList;
@@ -327,20 +328,24 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         if (blogVOList.size() <= 0) {
             return "参数错误";
         }
+        //博客uid列表
         List<String> blogUidList = new ArrayList<>();
+        //博客map（博客uid，博客VO）
         Map<String, BlogVO> blogVOMap = new HashMap<>();
         blogVOList.forEach(item -> {
             blogUidList.add(item.getUid());
             blogVOMap.put(item.getUid(), item);
         });
-
+        //获取博客
         List<Blog> blogList = blogService.listByIds(blogUidList);
         blogList.forEach(blog -> {
             BlogVO blogVO = blogVOMap.get(blog.getUid());
             if (blogVO != null) {
+                //修改博客中的排序字段
                 blog.setSort(blogVO.getSort());
             }
         });
+        //修改数据库信息
         Boolean save = blogService.updateBatchById(blogList);
 
         if (save) {
@@ -786,6 +791,159 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         }
 
         return null;
+    }
+
+    /**
+     * 通过状态获取博客数量
+     *
+     * @param status
+     */
+    @Override
+    public Integer getBlogCount(Integer status) {
+        QueryWrapper<Blog> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("status",status);
+        queryWrapper.eq("is_publish", EPublish.PUBLISH);
+        return Math.toIntExact(baseMapper.selectCount(queryWrapper));
+    }
+
+    /**
+     * 通过分类获取博客数目
+     */
+    @Override
+    public List<Map<String, Object>> getBlogCountByBlogSort() {
+        // 从Redis中获取博客分类下包含的博客数量
+        String jsonArrayList = redisUtil.get("DASHBOARD:BLOG_COUNT_BY_SORT");
+        if (StringUtils.isNotEmpty(jsonArrayList)) {
+            ArrayList jsonList = JsonUtils.jsonArrayToArrayList(jsonArrayList);
+            return jsonList;
+        }
+        List<Map<String, Object>> blogCoutByBlogSortMap = baseMapper.getBlogCountByBlogSort();
+        Map<String, Integer> blogSortMap = new HashMap<>();
+        for (Map<String, Object> item : blogCoutByBlogSortMap) {
+
+            String blogSortUid = String.valueOf(item.get("blog_sort_uid"));
+            // java.lang.Number是Integer,Long的父类
+            Number num = (Number) item.get("count");
+            Integer count = 0;
+            if (num != null) {
+                count = num.intValue();
+            }
+            blogSortMap.put(blogSortUid, count);
+        }
+
+        //把查询到的BlogSort放到Map中
+        Set<String> blogSortUids = blogSortMap.keySet();
+        Collection<BlogSort> blogSortCollection = new ArrayList<>();
+
+        if (blogSortUids.size() > 0) {
+            blogSortCollection = blogSortService.listByIds(blogSortUids);
+        }
+
+        Map<String, String> blogSortNameMap = new HashMap<>();
+        for (BlogSort blogSort : blogSortCollection) {
+            if (StringUtils.isNotEmpty(blogSort.getSortName())) {
+                blogSortNameMap.put(blogSort.getUid(), blogSort.getSortName());
+            }
+        }
+
+        List<Map<String, Object>> resultList = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : blogSortMap.entrySet()) {
+
+            String blogSortUid = entry.getKey();
+
+            if (blogSortNameMap.get(blogSortUid) != null) {
+                String blogSortName = blogSortNameMap.get(blogSortUid);
+                Integer count = entry.getValue();
+                Map<String, Object> itemResultMap = new HashMap<>();
+                itemResultMap.put("blogSortUid", blogSortUid);
+                itemResultMap.put("name", blogSortName);
+                itemResultMap.put("value", count);
+                resultList.add(itemResultMap);
+            }
+        }
+        // 将 每个分类下文章数目 存入到Redis【过期时间2小时】
+        if (resultList.size() > 0) {
+            redisUtil.setEx("DASHBOARD:BLOG_COUNT_BY_SORT", JsonUtils.objectToJson(resultList), 2, TimeUnit.HOURS);
+        }
+        return resultList;
+    }
+
+    /**
+     * 通过标签获取博客数目
+     */
+    @Override
+    public List<Map<String, Object>> getBlogCountByTag() {
+        // 从Redis中获取标签下包含的博客数量
+        String jsonArrayList = redisUtil.get("DASHBOARD:BLOG_COUNT_BY_TAG");
+        if (StringUtils.isNotEmpty(jsonArrayList)) {
+            ArrayList jsonList = JsonUtils.jsonArrayToArrayList(jsonArrayList);
+            return jsonList;
+        }
+
+        List<Map<String, Object>> blogCoutByTagMap = baseMapper.getBlogCountByTag();
+        Map<String, Integer> tagMap = new HashMap<>();
+        for (Map<String, Object> item : blogCoutByTagMap) {
+            String tagUid = String.valueOf(item.get("tag_uid"));
+            // java.lang.Number是Integer,Long的父类
+            Number num = (Number) item.get("count");
+            Integer count = num.intValue();
+            //如果只有一个UID的情况
+            if (tagUid.length() == 32) {
+                //如果没有这个内容的话，就设置
+                if (tagMap.get(tagUid) == null) {
+                    tagMap.put(tagUid, count);
+                } else {
+                    Integer tempCount = tagMap.get(tagUid) + count;
+                    tagMap.put(tagUid, tempCount);
+                }
+            } else {
+                //如果长度大于32，说明含有多个UID
+                if (StringUtils.isNotEmpty(tagUid)) {
+                    List<String> strList = StringUtils.changeStringToString(tagUid, ",");
+                    for (String strItem : strList) {
+                        if (tagMap.get(strItem) == null) {
+                            tagMap.put(strItem, count);
+                        } else {
+                            Integer tempCount = tagMap.get(strItem) + count;
+                            tagMap.put(strItem, tempCount);
+                        }
+                    }
+                }
+            }
+        }
+
+        //把查询到的Tag放到Map中
+        Set<String> tagUids = tagMap.keySet();
+        Collection<Tag> tagCollection = new ArrayList<>();
+        if (tagUids.size() > 0) {
+            tagCollection = tagService.listByIds(tagUids);
+        }
+
+        Map<String, String> tagEntityMap = new HashMap<>();
+        for (Tag tag : tagCollection) {
+            if (StringUtils.isNotEmpty(tag.getContent())) {
+                tagEntityMap.put(tag.getUid(), tag.getContent());
+            }
+        }
+
+        List<Map<String, Object>> resultList = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : tagMap.entrySet()) {
+            String tagUid = entry.getKey();
+            if (tagEntityMap.get(tagUid) != null) {
+                String tagName = tagEntityMap.get(tagUid);
+                Integer count = entry.getValue();
+                Map<String, Object> itemResultMap = new HashMap<>();
+                itemResultMap.put("tagUid", tagUid);
+                itemResultMap.put("name", tagName);
+                itemResultMap.put("value", count);
+                resultList.add(itemResultMap);
+            }
+        }
+        // 将 每个标签下文章数目 存入到Redis【过期时间2小时】
+        if (resultList.size() > 0) {
+            redisUtil.setEx("DASHBOARD:BLOG_COUNT_BY_TAG", JsonUtils.objectToJson(resultList), 2, TimeUnit.HOURS);
+        }
+        return resultList;
     }
 
     /**

@@ -1,9 +1,13 @@
 package com.yilin.yixueblog.web.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yilin.yixueblog.model.entity.Comment;
+import com.yilin.yixueblog.model.entity.CommentReport;
+import com.yilin.yixueblog.model.enums.EStatus;
 import com.yilin.yixueblog.model.vo.CommentVO;
 import com.yilin.yixueblog.model.vo.UserVO;
+import com.yilin.yixueblog.service.service.CommentReportService;
 import com.yilin.yixueblog.service.service.CommentService;
 import com.yilin.yixueblog.utils.RedisUtil;
 import com.yilin.yixueblog.utils.Result;
@@ -14,9 +18,12 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -29,6 +36,8 @@ public class CommentController {
     private RedisUtil redisUtil;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private CommentReportService commentReportService;
 
     @ApiOperation(value = "获取用户收到的评论回复数", notes = "获取用户收到的评论回复数")
     @GetMapping("/getUserReceiveCommentCount")
@@ -121,6 +130,41 @@ public class CommentController {
             return Result.succeed().message(msg);
         }
         return Result.err().message("点赞系统出现错误");
+    }
+
+    @ApiOperation(value = "举报评论", notes = "举报评论")
+    @PostMapping("/report")
+    public Result reportComment(@RequestBody CommentVO commentVO) {
+        Comment comment = commentService.getById(commentVO.getUid());
+        // 判断评论是否被删除
+        if (comment == null || comment.getStatus() == EStatus.DISABLED) {
+            return Result.err().message("该评论不存在");
+        }
+
+        // 判断举报的评论是否是自己的
+        if (comment.getUserUid().equals(commentVO.getUserUid())) {
+            return Result.err().message("不能举报自己的评论");
+        }
+        // 查看该用户是否重复举报该评论
+        QueryWrapper<CommentReport> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_uid", commentVO.getUserUid());
+        queryWrapper.eq("report_comment_uid", comment.getUid());
+        List<CommentReport> commentReportList = commentReportService.list(queryWrapper);
+        if (commentReportList.size() > 0) {
+            return Result.err().message("不能重复举报该评论");
+        }
+        CommentReport commentReport = new CommentReport();
+        commentReport.setContent(commentVO.getContent());
+        commentReport.setProgress(0);
+        // 从VO中获取举报的用户uid
+        commentReport.setUserUid(commentVO.getUserUid());
+        commentReport.setReportCommentUid(comment.getUid());
+        // 从entity中获取被举报的用户uid
+        commentReport.setReportUserUid(comment.getUserUid());
+        commentReport.setStatus(EStatus.ENABLE);
+        commentReport.insert();
+
+        return Result.succeed().message("举报成功");
     }
 
 }

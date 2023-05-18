@@ -121,4 +121,19 @@ public interface BlogService extends IService<Blog> {
      */
     List<Blog> getSimilarityBlogUid(String blogUid);
 
+    /**
+     * 通过状态获取博客数量
+     */
+     Integer getBlogCount(Integer status);
+
+    /**
+     * 通过分类获取博客数目
+     */
+     List<Map<String, Object>> getBlogCountByBlogSort();
+
+    /**
+     * 通过标签获取博客数目
+     */
+     List<Map<String, Object>> getBlogCountByTag();
+
 }

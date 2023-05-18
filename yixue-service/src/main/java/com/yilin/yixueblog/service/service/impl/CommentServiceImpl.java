@@ -41,6 +41,17 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Autowired
     private RedisUtil redisUtil;
 
+    /**
+     * 获取评论数目
+     * @param status
+     */
+    @Override
+    public Integer getCommentCount(int status) {
+        QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("status", status);
+        return Math.toIntExact(baseMapper.selectCount(queryWrapper));
+    }
+
     @Override
     public String add(CommentVO commentVO) {
         // 判断该博客是否开启评论功能
@@ -59,12 +70,14 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         }
 
         Comment comment = new Comment();
+        //设置博客uid
         comment.setBlogUid(commentVO.getBlogUid());
+        //设置内容
         comment.setContent(commentVO.getContent());
-        comment.setToUserUid(commentVO.getToUserUid());
-
         // 当该评论不是一级评论时，需要设置一级评论UID字段
         if (StringUtils.isNotEmpty(commentVO.getToUid())) {
+            //设置回复用户的uid
+            comment.setToUserUid(commentVO.getToUserUid());
             Comment toComment = baseMapper.selectById(commentVO.getToUid());
             // 表示 toComment是非一级评论
             if (toComment != null && StringUtils.isNotEmpty(toComment.getFirstCommentUid())) {
@@ -115,7 +128,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         List<Comment> resultList = new ArrayList<>();
 
         QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("blog_uid", commentVO.getBlogUid());
+        queryWrapper.in("blog_uid", commentVO.getBlogUid());
         //分页
         Page<Comment> page = new Page<>();
         page.setCurrent(commentVO.getCurrentPage());
@@ -188,7 +201,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             // 获取用户头像
             avatarList = avatarService.listByIds(avatarUidList);
         }
-
+        // 头像uid ， 头像实体
         Map<String, Avatar> avatarMap = new HashMap<>();
         avatarList.forEach(item -> {
             avatarMap.put(item.getUid(), item);
@@ -214,8 +227,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         });
 
         // 设置一级评论下的子评论
-        Map<String, List<Comment>> toCommentListMap = new HashMap<>();
-
         for (Comment firstComment : firstlist) {
             List<Comment> temp = new ArrayList<>();
             for (Comment comment : notFirstList) {

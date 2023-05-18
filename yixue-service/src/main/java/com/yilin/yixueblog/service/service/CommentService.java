@@ -11,6 +11,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 public interface CommentService extends IService<Comment> {
+
+
+    /**
+     * 获取评论数目
+     */
+    Integer getCommentCount(int status);
+
     /**
      * 发表评论
      *
