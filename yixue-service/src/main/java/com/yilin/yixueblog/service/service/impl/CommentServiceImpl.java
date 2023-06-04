@@ -43,6 +43,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     /**
      * 获取评论数目
+     *
      * @param status
      */
     @Override
@@ -266,6 +267,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         queryWrapper.and(wrapper -> wrapper.eq("user_uid", requestUserUid).or().eq("to_user_uid", requestUserUid));
         IPage<Comment> pageList = baseMapper.selectPage(page, queryWrapper);
         List<Comment> list = pageList.getRecords();
+        if (list.size() == 0) {
+            return null;
+        }
         // 获取用户id
         List<String> userUidList = new ArrayList<>();
         list.forEach(item -> {
@@ -300,8 +304,11 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                 fileUids.add(item.getAvatar());
             }
         });
+        List<Avatar> avatarList = new ArrayList<>();
 
-        List<Avatar> avatarList = avatarService.listByIds(fileUids);
+        if (fileUids.size() > 0) {
+            avatarList = avatarService.listByIds(fileUids);
+        }
 
         Map<String, Avatar> avatarMap = new HashMap<>();
         if (avatarList.size() > 0) {
@@ -420,7 +427,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         //给该博客点赞 +1
         Integer count = blog.getCollectCount() + 1;
         //放入redis
-        redisUtil.set("BLOG_PRAISE:" + blogUid, count.toString(),24,TimeUnit.HOURS);
+        redisUtil.set("BLOG_PRAISE:" + blogUid, count.toString(), 24, TimeUnit.HOURS);
         blog.setCollectCount(count);
         blog.updateById();
         //向评论表添加点赞数据

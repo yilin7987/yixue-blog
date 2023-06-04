@@ -40,7 +40,7 @@ public interface CommentService extends IService<Comment> {
      * @param userVO
      * @return
      */
-    public Map<String, Object> getListByUser(HttpServletRequest request, UserVO userVO);
+    Map<String, Object> getListByUser(HttpServletRequest request, UserVO userVO);
 
     /**
      * 获取用户点赞

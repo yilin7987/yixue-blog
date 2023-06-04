@@ -8,7 +8,7 @@ spring:
   cloud:
     nacos:
       username: nacos
-      password: nacos
+      password: chen1178990518
       #注册中心
       discovery:
         server-addr: 1.12.236.238:8848

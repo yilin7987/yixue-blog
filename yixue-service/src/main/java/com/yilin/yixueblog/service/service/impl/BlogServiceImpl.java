@@ -1028,7 +1028,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
      */
     public static List<String> pythonBlog(String blogUid) throws IOException, InterruptedException {
         // 在Java中创建一个ProcessBuilder对象，指定python命令和脚本路径
-        ProcessBuilder processBuilder = new ProcessBuilder("C:\\Users\\yilin\\Desktop\\python\\blog\\venv\\Scripts\\python.exe", "C:\\Users\\yilin\\Desktop\\python\\blog\\similarityBlog.py");
+        ProcessBuilder processBuilder = new ProcessBuilder("/root/blog-python/b179760656a17f239be15b7c10036143_venv/bin/python3", "/root/blog-python/similarityBlog.py");
         // 设置参数列表，可以是任意类型和数量
         List<String> arguments = new ArrayList<>();
         arguments.add(blogUid);

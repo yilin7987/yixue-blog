@@ -82,7 +82,7 @@ public class CommentController {
     public Result getListByUser(HttpServletRequest request, @RequestBody UserVO userVO){
         Map<String, Object> map = commentService.getListByUser(request, userVO);
         if (map==null){
-            return Result.err().message("token令牌未被识别");
+            return Result.succeed().message("token令牌未被识别");
         }
         return Result.succeed().data(map);
     }
